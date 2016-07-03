@@ -19,10 +19,10 @@ cv::Mat get_lower_half(cv::Mat src) {
 
 int main(int argc, char* argv[])
 {
-	if (argc < 2) {
-		std::cout << "usage: " << argv[0] << " image" << std::endl;
-		return 0;
-	}
+    if (argc < 2) {
+        std::cout << "usage: " << argv[0] << " image" << std::endl;
+        return 0;
+    }
 
     cv::Mat original = cv::imread(argv[1], CV_LOAD_IMAGE_COLOR);
     if (original.empty()) {
@@ -39,5 +39,5 @@ int main(int argc, char* argv[])
 
     imwrite("output.jpg", resized_img);
 
-	return 0;
+    return 0;
 }
