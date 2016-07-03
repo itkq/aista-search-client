@@ -1,24 +1,41 @@
 require 'mechanize'
 require 'dotenv'
 
-class Scrape
+class Scraper
   INDEX_URL = 'http://aikatunews.livedoor.biz/archives/cat_252353.html'
 
-  def initialize
+  def initialize img_dir='.'
     Dotenv.load
     @mech = Mechanize.new
     @mech.user_agent_alias = 'Mac Firefox'
-    @dir = 'img/'
+    @dir = img_dir
   end
 
-  def get_articles
-    page = @mech.get(INDEX_URL)
+  def get_article_by_episode ep
+    page = 1
+    while true
+      articles = get_articles(page)
+      if article.empty?
+        return nil
+      end
+      if articles.keys.include?(ep)
+        return articles[ep]
+      end
+
+      page += 1
+    end
+  end
+
+  def get_articles page=1
+    page = @mech.get(INDEX_URL + "?p=#{page}")
 
     arr = page.search('div.article-header').map{|a|
       if a.css('.article-category > a').text.match('アイカツスターズ')
-        ep = a.css('.article-title > a').text.match(/第(\d+)話/)[1].to_i
+        matched = a.css('.article-title > a').text.match(/第(\d+)話[ 　]+(.+)$/)
+        ep = matched[1].to_i
+        title = matched[2]
         url = a.css('.article-title > a').attr('href').value
-        [ep, url]
+        [ep, {title: title, url: url}]
       end
     }.compact
 
@@ -29,9 +46,9 @@ class Scrape
     puts url
     page = @mech.get(url)
     if thumb_flg
-      resources = get_thumbnail_resources(page)
+      resources = get_thumbnail_resources(page)[0..4] # for test
     else
-      resources = get_img_resources(page)
+      resources = get_img_resources(page)[0..4] # for test
     end
 
     ep = get_episode(page)
