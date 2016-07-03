@@ -51,3 +51,35 @@ build-iPhoneSimulator/
 
 .env
 *img/
+### https://raw.github.com/github/gitignore/f5875713439b01eb9dd4c50188c7805d4670f4e9/C++.gitignore
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+output.jpg
