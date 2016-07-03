@@ -15,7 +15,7 @@ class Scraper
     page = 1
     while true
       articles = get_articles(page)
-      if article.empty?
+      if articles.empty?
         return nil
       end
       if articles.keys.include?(ep)
@@ -46,9 +46,9 @@ class Scraper
     puts url
     page = @mech.get(url)
     if thumb_flg
-      resources = get_thumbnail_resources(page)[0..4] # for test
+      resources = get_thumbnail_resources(page)
     else
-      resources = get_img_resources(page)[0..4] # for test
+      resources = get_img_resources(page)
     end
 
     ep = get_episode(page)

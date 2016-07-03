@@ -17,9 +17,9 @@ class Client
     res = @clnt.post(endpoint, data)
     if res.status_code == 200
       body = JSON.parse(res.body)
-      true
+      body["status"] == "ok"
     else
-      puts body
+      puts res
       false
     end
   end
@@ -31,9 +31,9 @@ class Client
     res = @clnt.post(endpoint, data)
     if res.status_code == 200
       body = JSON.parse(res.body)
-      true
+      body["status"] == "ok"
     else
-      puts body
+      puts res
       false
     end
   end
@@ -46,7 +46,7 @@ class Client
       body = JSON.parse(res.body)
       body["episode"]
     else
-      puts body
+      puts res
       nil
     end
   end
@@ -60,8 +60,36 @@ class Client
       body = JSON.parse(res.body)
       body["count"] > 0
     else
-      puts body
+      puts res
       false
     end
   end
+
+  def update_images request
+    json = JSON.generate(request)
+
+    endpoint = @base_uri + "/api/image/update"
+    res = @clnt.post(endpoint, json, 'Content-Type' => 'application/json')
+    if res.status_code == 200
+      body = JSON.parse(res.body)
+      body["count"] > 0
+    else
+      puts res
+      false
+    end
+  end
+
+  def get_images id
+    endpoint = @base_uri + "/api/images?episode_id=#{id}"
+    res = @clnt.get(endpoint)
+
+    if res.status_code == 200
+      body = JSON.parse(res.body)
+      body["images"]
+    else
+      puts res
+      false
+    end
+  end
+
 end
