@@ -3,6 +3,7 @@ require 'httpclient'
 require 'json'
 
 class Client
+  IMG_CNT = 100
 
   def initialize
     Dotenv.load
@@ -92,4 +93,17 @@ class Client
     end
   end
 
+  def get_upload_images
+    endpoint = @base_uri + "/api/images/upload?cnt=#{IMG_CNT}"
+    res = @clnt.get(endpoint)
+
+    if res.status_code == 200
+      body = JSON.parse(res.body)
+      body["images"]
+    else
+      puts res
+      false
+    end
+
+  end
 end

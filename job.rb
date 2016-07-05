@@ -2,6 +2,7 @@ require 'dotenv'
 require './scraper'
 require './client'
 require './cloudvision'
+require './twitter'
 
 class Job
   INITIALIZED = 0
@@ -19,9 +20,48 @@ class Job
     Dotenv.load
     @scr = Scraper.new(ENV['APP_DIR'])
     @clnt = Client.new
+    @tw_clnt = TwitterClient.new
   end
 
   def main
+    case ARGV[0]
+    when "daily"
+      daily
+    when "weekley"
+      weekley
+    else
+      puts "Usage: bundle exec ruby job.rb [type]"
+      puts "  type : daily/weekly"
+      exit 1
+    end
+  end
+
+  def daily
+    images = @clnt.get_upload_images
+    unless images
+      raise "error: get images to upload"
+    end
+
+    request = []
+    images.each do |img|
+      url = @tw_clnt.upload_image(ENV['IMG_RELATIVE_PATH'] + img["path"])
+      puts url
+      if url
+        request << {
+          "path"     => img["path"],
+          "sentence" => img["sentence"],
+          "url"      => url,
+        }
+      end
+      sleep rand(5)+1
+    end
+
+    unless @clnt.update_images(request)
+      raise "error: update images ##{episode_id}"
+    end
+  end
+
+  def weekly
     ep = @clnt.get_latest_episode
     unless ep
       ep = {"id" => 1, "status" => INITIALIZED}
@@ -89,11 +129,11 @@ class Job
     end
 
     unless @clnt.update_images(request)
-      exit 1
+      raise "error: update images ##{episode_id}"
     end
 
     unless @clnt.update_episode(episode_id, REGISTERED)
-      exit 1
+      raise "error: update episode ##{episode_id} status => #{REGISTERED}"
     end
   end
 end

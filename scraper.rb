@@ -4,7 +4,7 @@ require 'dotenv'
 class Scraper
   INDEX_URL = 'http://aikatunews.livedoor.biz/archives/cat_252353.html'
 
-  def initialize img_dir='.'
+  def initialize img_dir='/img/'
     Dotenv.load
     @mech = Mechanize.new
     @mech.user_agent_alias = 'Mac Firefox'
