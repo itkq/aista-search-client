@@ -1,4 +1,5 @@
 require 'dotenv'
+require 'rmagick'
 require './scraper'
 require './client'
 require './cloudvision'
@@ -120,7 +121,8 @@ class Job
     images.each do |img|
       puts img
       if img["sentence"].nil?
-        system("./cpp/preprocess.app #{img['path']}")
+        img = Magick::Image.read(img['path'])
+        img.crop(0, 540, 1920, 1080).scale(0.5).write('output.jpg')
         desc = CloudVision.new.get_description("output.jpg")
         sentence = desc.gsub(/[#{pattern.keys.join}]/, pattern)
         puts sentence
@@ -136,6 +138,7 @@ class Job
       raise "error: update episode ##{episode_id} status => #{REGISTERED}"
     end
   end
+
 end
 
 
