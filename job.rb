@@ -1,4 +1,5 @@
 require 'dotenv'
+require 'logger'
 require 'rmagick'
 require './scraper'
 require './client'
@@ -19,17 +20,18 @@ class Job
 
   def initialize
     Dotenv.load
-    @scr = Scraper.new(ENV['APP_DIR'])
-    @clnt = Client.new
-    @tw_clnt = TwitterClient.new
+    @logger = Logger.new('job.log')
+    @scr = Scraper.new(@logger, ENV['APP_DIR'])
+    @clnt = Client.new(@logger)
+    @tw_clnt = TwitterClient.new(@logger)
   end
 
   def main
     case ARGV[0]
     when "daily"
       daily
-    when "weekley"
-      weekley
+    when "weekly"
+      weekly
     else
       puts "Usage: bundle exec ruby job.rb [type]"
       puts "  type : daily/weekly"
@@ -45,16 +47,18 @@ class Job
 
     request = []
     images.each do |img|
-      url = @tw_clnt.upload_image(ENV['IMG_RELATIVE_PATH'] + img["path"])
-      puts url
-      if url
-        request << {
-          "path"     => img["path"],
-          "sentence" => img["sentence"],
-          "url"      => url,
-        }
+      if img['url'].nil?
+        url = @tw_clnt.upload_image(ENV['IMG_RELATIVE_PATH'] + img["path"])
+        @logger.info "#{img["id"]} => #{url}"
+        if url
+          request << {
+            "path"     => img["path"],
+            "sentence" => img["sentence"],
+            "url"      => url,
+          }
+        end
+        sleep rand(5)+1
       end
-      sleep rand(5)+1
     end
 
     unless @clnt.update_images(request)
@@ -74,10 +78,10 @@ class Job
     else
       episode_id, status = ep["id"] + 1, INITIALIZED
     end
-    puts "target episode: #{episode_id}, status: #{status}"
+    @logger.info "target episode: #{episode_id}, status: #{status}"
 
     while status != REGISTERED
-      puts "[#{FUNCS[status]}]"
+      @logger.info "[#{FUNCS[status]}]"
       self.send(FUNCS[status], episode_id)
       status += 1
     end
@@ -119,13 +123,12 @@ class Job
     }
     request = []
     images.each do |img|
-      puts img
       if img["sentence"].nil?
         img = Magick::Image.read(img['path'])
         img.crop(0, 540, 1920, 1080).scale(0.5).write('output.jpg')
         desc = CloudVision.new.get_description("output.jpg")
         sentence = desc.gsub(/[#{pattern.keys.join}]/, pattern)
-        puts sentence
+        @logger.info "#{img['path']} => #{sentence}"
         request << {"path" => img["path"], "sentence" => sentence}
       end
     end

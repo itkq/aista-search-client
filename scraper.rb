@@ -4,10 +4,11 @@ require 'dotenv'
 class Scraper
   INDEX_URL = 'http://aikatunews.livedoor.biz/archives/cat_252353.html'
 
-  def initialize img_dir='/img/'
+  def initialize logger, img_dir='./img/'
     Dotenv.load
     @mech = Mechanize.new
     @mech.user_agent_alias = 'Mac Firefox'
+    @logger = logger
     @dir = img_dir
   end
 
@@ -43,7 +44,7 @@ class Scraper
   end
 
   def get_imgs url, thumb_flg=false
-    puts url
+    @logger.info url
     page = @mech.get(url)
     if thumb_flg
       resources = get_thumbnail_resources(page)
@@ -52,12 +53,12 @@ class Scraper
     end
 
     ep = get_episode(page)
-    puts "get image from episode #{ep}"
-    puts "#{resources.size} images"
+    @logger.info "get image from episode #{ep}"
+    @logger.info "#{resources.size} images"
     format = "%03d.jpg"
 
     dirname = @dir + ("%03d" % ep) + "/"
-    puts dirname
+    @logger.info dirname
     unless File.exists?(dirname)
       FileUtils.mkdir(dirname)
     end
@@ -95,16 +96,14 @@ class Scraper
   end
 
   def save_img path, url
-    print "saving #{url} ... "
-
     begin
       @mech.get(url).save_as(path)
     rescue => e
-      puts e.message
+      @logger.warn e.message
       return false
     end
 
-    puts 'finished'
+    @logger.info "#{url} ==> finished"
     true
   end
 

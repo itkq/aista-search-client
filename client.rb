@@ -5,10 +5,11 @@ require 'json'
 class Client
   IMG_CNT = 100
 
-  def initialize
+  def initialize logger
     Dotenv.load
     @base_uri = ENV['BASE_URI']
     @clnt = HTTPClient.new
+    @logger = logger
   end
 
   def create_episode id, title
@@ -20,7 +21,7 @@ class Client
       body = JSON.parse(res.body)
       body["status"] == "ok"
     else
-      puts res
+      @logger.warn res
       false
     end
   end
@@ -34,7 +35,7 @@ class Client
       body = JSON.parse(res.body)
       body["status"] == "ok"
     else
-      puts res
+      @logger.warn res
       false
     end
   end
@@ -47,7 +48,7 @@ class Client
       body = JSON.parse(res.body)
       body["episode"]
     else
-      puts res
+      @logger.warn res
       nil
     end
   end
@@ -61,7 +62,7 @@ class Client
       body = JSON.parse(res.body)
       body["count"] > 0
     else
-      puts res
+      @logger.warn res
       false
     end
   end
@@ -75,7 +76,7 @@ class Client
       body = JSON.parse(res.body)
       body["count"] > 0
     else
-      puts res
+      @logger.warn res
       false
     end
   end
@@ -88,7 +89,7 @@ class Client
       body = JSON.parse(res.body)
       body["images"]
     else
-      puts res
+      @logger.warn res
       false
     end
   end
@@ -101,7 +102,7 @@ class Client
       body = JSON.parse(res.body)
       body["images"]
     else
-      puts res
+      @logger.warn res
       false
     end
 

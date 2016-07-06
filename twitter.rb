@@ -2,7 +2,7 @@ require 'twitter'
 require 'dotenv'
 
 class TwitterClient
-  def initialize
+  def initialize logger
     @clnt = new_client
   end
 
@@ -14,7 +14,7 @@ class TwitterClient
       end
       return res.text
     rescue => e
-      puts e.message
+      @logger.warn e.message
       return nil
     end
   end
