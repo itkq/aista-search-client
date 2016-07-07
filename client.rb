@@ -12,6 +12,17 @@ class Client
     @logger = logger
   end
 
+  def ping
+    endpoint = @base_uri + "/ping"
+    begin
+      res = @clnt.get(endpoint)
+      res.status_code == 200
+    rescue => e
+      @logger.warn e.message
+      false
+    end
+  end
+
   def create_episode id, title
     endpoint = @base_uri + "/api/episode/create"
     data = {id: id, title: title}

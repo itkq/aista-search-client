@@ -67,6 +67,10 @@ class Job
   end
 
   def weekly
+    unless @clnt.ping
+      raise "error: web server is not running"
+    end
+
     ep = @clnt.get_latest_episode
     unless ep
       ep = {"id" => 1, "status" => INITIALIZED}
