@@ -18,6 +18,8 @@ class Job
     "register_sentence"
   ].freeze
 
+  REQ_SIZE = 10
+
   def initialize
     Dotenv.load
     @logger = Logger.new('job.log')
@@ -102,8 +104,8 @@ class Job
 
   def retrieve_images episode_id
     article = @scr.get_article_by_episode(episode_id)
+    path_list = @scr.get_imgs(article[:url], true)
 
-    path_list = @scr.get_imgs(article[:url])
     if path_list.empty?
       raise "error: save images"
       exit
@@ -128,12 +130,19 @@ class Job
     request = []
     images.each do |img|
       if img["sentence"].nil?
-        img = Magick::Image.read(img['path'])
-        img.crop(0, 540, 1920, 1080).scale(0.5).write('output.jpg')
+        magick_img = Magick::Image.read(img['path']).first
+        magick_img.crop(0, 540, 1920, 1080).scale(0.5).write('output.jpg')
         desc = CloudVision.new.get_description("output.jpg")
         sentence = desc.gsub(/[#{pattern.keys.join}]/, pattern)
         @logger.info "#{img['path']} => #{sentence}"
         request << {"path" => img["path"], "sentence" => sentence}
+      end
+
+      if request.size >= REQ_SIZE
+        unless @clnt.update_images(request)
+          raise "error: update images ##{episode_id}"
+        end
+        request = []
       end
     end
 

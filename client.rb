@@ -85,6 +85,7 @@ class Client
     res = @clnt.post(endpoint, json, 'Content-Type' => 'application/json')
     if res.status_code == 200
       body = JSON.parse(res.body)
+      @logger.info "update #{body["count"]} images"
       body["count"] > 0
     else
       @logger.warn res

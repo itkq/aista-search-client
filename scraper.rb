@@ -10,6 +10,7 @@ class Scraper
     @mech.user_agent_alias = 'Mac Firefox'
     @logger = logger
     @dir = img_dir
+    @thumb_dir = @dir + 'thumb/'
   end
 
   def get_article_by_episode ep
@@ -46,11 +47,7 @@ class Scraper
   def get_imgs url, thumb_flg=false
     @logger.info url
     page = @mech.get(url)
-    if thumb_flg
-      resources = get_thumbnail_resources(page)
-    else
-      resources = get_img_resources(page)
-    end
+    resources = get_img_resources(page)
 
     ep = get_episode(page)
     @logger.info "get image from episode #{ep}"
@@ -58,21 +55,40 @@ class Scraper
     format = "%03d.jpg"
 
     dirname = @dir + ("%03d" % ep) + "/"
+
     @logger.info dirname
     unless File.exists?(dirname)
       FileUtils.mkdir(dirname)
     end
 
+    if thumb_flg
+      thumb_dirname = @thumb_dir + ("%03d" % ep) + "/"
+      unless File.exists?(thumb_dirname)
+        FileUtils.mkdir_p(thumb_dirname)
+        @logger.info "make thumb dir ##{ep}"
+      end
+    end
+
     succ = []
     resources.each_with_index do |_url, i|
-      path = dirname + format % [i + 1]
+      path = dirname + format % [i+1]
       if save_img(path, _url)
+        if thumb_flg
+          dst = thumb_dirname + format % [i+1]
+          reduction(path, dst)
+        end
+
         succ << path
       end
       sleep(1)
     end
 
     succ
+  end
+
+  def reduction src, dst
+    img = Magick::Image.read(src).first
+    img.scale(0.5).write(dst)
   end
 
   def get_episode page
