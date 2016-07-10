@@ -80,7 +80,7 @@ class Scraper
 
         succ << path
       end
-      sleep(1)
+      sleep rand(5)+1
     end
 
     succ

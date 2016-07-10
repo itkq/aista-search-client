@@ -4,6 +4,7 @@ require 'dotenv'
 class TwitterClient
   def initialize logger
     @clnt = new_client
+    @logger = logger
   end
 
   def upload_image path

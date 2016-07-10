@@ -50,7 +50,7 @@ class Job
     request = []
     images.each do |img|
       if img['url'].nil?
-        url = @tw_clnt.upload_image(ENV['IMG_RELATIVE_PATH'] + img["path"])
+        url = @tw_clnt.upload_image(img["path"])
         @logger.info "#{img["id"]} => #{url}"
         if url
           request << {
@@ -64,7 +64,7 @@ class Job
     end
 
     unless @clnt.update_images(request)
-      raise "error: update images ##{episode_id}"
+      raise "error: update images"
     end
   end
 
