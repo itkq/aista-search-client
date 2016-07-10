@@ -134,6 +134,7 @@ class Job
         magick_img.crop(0, 540, 1920, 1080).scale(0.5).write('output.jpg')
         desc = CloudVision.new.get_description("output.jpg")
         sentence = desc.gsub(/[#{pattern.keys.join}]/, pattern)
+        sentence = sentence.each_char.to_a.delete_if{|c| c.ord > 39321}.join
         @logger.info "#{img['path']} => #{sentence}"
         request << {"path" => img["path"], "sentence" => sentence}
       end
@@ -146,7 +147,7 @@ class Job
       end
     end
 
-    unless @clnt.update_images(request)
+    unless request.empty? || @clnt.update_images(request)
       raise "error: update images ##{episode_id}"
     end
 
