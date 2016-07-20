@@ -135,7 +135,13 @@ class Job
         desc = CloudVision.new.get_description("output.jpg")
         sentence = desc.gsub(/[#{pattern.keys.join}]/, pattern)
         @logger.info "#{img['path']} => #{sentence}"
-        request << {"path" => img["path"], "sentence" => sentence}
+
+        if sentence.empty?
+          FileUtils.rm(img['path'])
+          FileUtils.rm(img['path'].sub('img', 'img/thumb'))
+        else
+          request << {"path" => img["path"], "sentence" => sentence}
+        end
       end
 
       if request.size >= REQ_SIZE
