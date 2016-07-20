@@ -89,6 +89,7 @@ class Client
       @logger.info "update #{body["count"]} images"
       body["count"] > 0
     else
+      @logger.info json
       @logger.warn res
       false
     end

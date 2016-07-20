@@ -50,7 +50,7 @@ class Job
     request = []
     images.each do |img|
       if img['url'].nil?
-        url = @tw_clnt.upload_image(ENV['IMG_RELATIVE_PATH'] + img["path"])
+        url = @tw_clnt.upload_image(img["path"])
         @logger.info "#{img["id"]} => #{url}"
         if url
           request << {
@@ -64,7 +64,7 @@ class Job
     end
 
     unless @clnt.update_images(request)
-      raise "error: update images ##{episode_id}"
+      raise "error: update images"
     end
   end
 
@@ -134,6 +134,7 @@ class Job
         magick_img.crop(0, 540, 1920, 1080).scale(0.5).write('output.jpg')
         desc = CloudVision.new.get_description("output.jpg")
         sentence = desc.gsub(/[#{pattern.keys.join}]/, pattern)
+        sentence = sentence.each_char.to_a.delete_if{|c| c.ord > 39321}.join
         @logger.info "#{img['path']} => #{sentence}"
 
         if sentence.empty?
@@ -152,7 +153,7 @@ class Job
       end
     end
 
-    unless @clnt.update_images(request)
+    unless request.empty? || @clnt.update_images(request)
       raise "error: update images ##{episode_id}"
     end
 
