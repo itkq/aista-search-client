@@ -8,3 +8,4 @@ gem "httpclient"
 gem "color_echo"
 gem "twitter"
 gem "rmagick"
+gem 'aistaimgcrawler', path: 'aistaimgcrawler'

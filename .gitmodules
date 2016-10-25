@@ -1,0 +1,3 @@
+[submodule "aistaimgcrawler"]
+	path = aistaimgcrawler
+	url = git@github.com:itkq/aistaimgcrawler.git
