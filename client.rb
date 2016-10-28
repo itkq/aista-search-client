@@ -5,12 +5,16 @@ require 'json'
 class Client
   IMG_CNT = 100
 
-  def initialize logger
+  attr_reader :dir, :thumb_dir
+
+  def initialize img_dir, logger, base_uri=nil, api_token=nil
     Dotenv.load
-    @base_uri = ENV['BASE_URI']
-    @clnt = HTTPClient.new
-    @logger = logger
-    @token = ENV['API_TOKEN']
+    @base_uri  = base_uri || ENV['BASE_URI']
+    @token     = api_token || ENV['API_TOKEN']
+    @clnt      = HTTPClient.new
+    @logger    = logger
+    @dir       = img_dir
+    @thumb_dir = @dir + 'thumb/'
   end
 
   def ping
