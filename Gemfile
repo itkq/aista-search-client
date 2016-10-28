@@ -9,3 +9,5 @@ gem "color_echo"
 gem "twitter"
 gem "rmagick"
 gem 'aistaimgcrawler', path: 'aistaimgcrawler'
+gem 'pry'
+gem 'mysql'

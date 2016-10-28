@@ -8,6 +8,7 @@ GEM
   specs:
     addressable (2.4.0)
     buftok (0.2.0)
+    coderay (1.1.1)
     color_echo (3.1.0)
     domain_name (0.5.20160615)
       unf (>= 0.0.5, < 1.0.0)
@@ -37,9 +38,11 @@ GEM
       webrobots (>= 0.0.9, < 0.2)
     memoizable (0.4.2)
       thread_safe (~> 0.3, >= 0.3.1)
+    method_source (0.8.2)
     mime-types (2.99.2)
     mini_portile2 (2.1.0)
     multipart-post (2.0.0)
+    mysql (2.9.1)
     naught (1.1.0)
     net-http-digest_auth (1.4)
     net-http-persistent (2.9.4)
@@ -48,8 +51,13 @@ GEM
       pkg-config (~> 1.1.7)
     ntlm-http (0.1.1)
     pkg-config (1.1.7)
+    pry (0.10.4)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
     rmagick (2.15.4)
     simple_oauth (0.3.1)
+    slop (3.6.0)
     thread_safe (0.3.5)
     twitter (5.16.0)
       addressable (~> 2.3)
@@ -76,6 +84,8 @@ DEPENDENCIES
   dotenv
   httpclient
   mechanize
+  mysql
+  pry
   rmagick
   twitter
 
