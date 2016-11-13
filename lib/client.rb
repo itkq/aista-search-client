@@ -57,7 +57,7 @@ class Client
   end
 
   def get_latest_episode
-    endpoint = @base_uri + "/api/episodes/?token=#{@token}"
+    endpoint = @base_uri + "/api/episodes/?cnt=999&token=#{@token}"
 
     res = @clnt.get(endpoint)
     if res.status_code == 200
@@ -87,7 +87,7 @@ class Client
     json = JSON.generate(request)
 
     endpoint = @base_uri + "/api/images/?token=#{@token}"
-    res = @clnt.post(endpoint, json, 'Content-Type' => 'application/json')
+    res = @clnt.put(endpoint, json, 'Content-Type' => 'application/json')
     if res.status_code == 200
       body = JSON.parse(res.body)
       @logger.info "update #{body["count"]} images"
@@ -96,6 +96,17 @@ class Client
       @logger.info json
       @logger.warn res
       false
+    end
+  end
+
+  def delete_image id
+    endpoint = @base_uri + "/api/images/#{id}?token=#{@token}"
+    res = @clnt.delete(endpoint)
+    if res.status_code == 200
+      true
+    else
+      @logger.warn res
+      nil
     end
   end
 

@@ -11,3 +11,4 @@ gem "rmagick"
 gem 'aistaimgcrawler', path: 'aistaimgcrawler'
 gem 'pry'
 gem 'mysql'
+gem 'rspec'
