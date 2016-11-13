@@ -18,8 +18,17 @@ class Base
 
     img_dir = './img/'
     @logger = Logger.new('job.log')
-    @crawler = Aistaimgcrawler::Ponpokonwes.new(@logger, img_dir)
+    @crawler = crawler.new(@logger, img_dir)
     @clnt = Client.new(img_dir, @logger, ENV['BASE_URI'], ENV['API_TOKEN'])
+  end
+
+  def crawler type="ponpokonwes"
+    case ENV['CRAWLER_TYPE'] || type
+    when "ponpokonwes"
+      Aistaimgcrawler::Ponpokonwes
+    when "aikatunews"
+      Aistaimgcrawler::Aikatunews
+    end
   end
 
   def next_status(status)

@@ -23,7 +23,7 @@ class Image < Base
     puts ep
     episode_id = ep["id"]
 
-    path_list = @crawler.get_imgs(episode_id, 10)
+    path_list = @crawler.get_imgs(episode_id)
     if path_list.empty?
       raise "error: save images"
       exit
