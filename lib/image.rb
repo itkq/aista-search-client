@@ -61,19 +61,24 @@ class Image < Base
     images.each_slice(SPLIT_SIZE).to_a.each do |seq|
       seq.each do |img|
         if img["sentence"].nil?
-          magick_img = Magick::Image.read(img['path']).first
-          magick_img.crop(0, 540, 1920, 1080).scale(0.5).write('output.jpg')
-          desc = CloudVision.new.get_description("output.jpg")
-          sentence = desc.gsub(/[#{pattern.keys.join}]/, pattern)
-          sentence = sentence.each_char.to_a.delete_if{|c| c.ord > 39321}.join
-          @logger.info "#{img['path']} => #{sentence}"
+          begin
+            magick_img = Magick::Image.read(img['path']).first
+            magick_img.crop(0, 540, 1920, 1080).scale(0.5).write('output.jpg')
+            desc = CloudVision.new.get_description("output.jpg")
+            sentence = desc.gsub(/[#{pattern.keys.join}]/, pattern)
+            sentence = sentence.each_char.to_a.delete_if{|c| c.ord > 39321}.join
+            @logger.info "#{img['path']} => #{sentence}"
 
-          puts "sentence => '#{sentence}'"
-          if sentence.empty?
+            puts "sentence => '#{sentence}'"
+            if sentence.empty?
+              @clnt.delete_image(img['id'])
+            else
+              img['sentence'] = sentence
+              request << img
+            end
+          rescue => e
+            @logger.warn e.message
             @clnt.delete_image(img['id'])
-          else
-            img['sentence'] = sentence
-            request << img
           end
         end
       end
