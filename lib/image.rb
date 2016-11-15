@@ -5,6 +5,7 @@ require 'rmagick'
 
 class Image < Base
   SPLIT_SIZE = 50
+  THUMB_SIZE = 400
 
   def initialize
     super
@@ -121,7 +122,7 @@ class Image < Base
     files = `ls #{src}`.split("\n")
     files.each do |f|
       img = Magick::Image.read(src+'/'+f).first
-      img.scale(0.3).write(dst+'/'+f)
+      img.resize_to_fit(THUMB_SIZE, THUMB_SIZE).write(dst+'/'+f)
       img.destroy!
       puts f
     end
