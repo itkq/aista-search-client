@@ -64,7 +64,7 @@ class Image < Base
         if img["sentence"].nil?
           begin
             magick_img = Magick::Image.read(img['path']).first
-            magick_img.crop(0, 540, 1920, 1080).scale(0.5).write('output.jpg')
+            magick_img.write('output.jpg')
             desc = CloudVision.new.get_description("output.jpg")
             sentence = desc.gsub(/[#{pattern.keys.join}]/, pattern)
             sentence = sentence.each_char.to_a.delete_if{|c| c.ord > 39321}.join
